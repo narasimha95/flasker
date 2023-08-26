@@ -1,0 +1,12 @@
+<h1>this is my first webpage</h1>
+
+<p>My name is {{ first_name | upper }}</p>
+
+<p>{{ stuff | safe }}</p>
+
+<h3>Favorite Pizza</h3>
+{% for item in favorite_pizza %} {% if item != "mango" %}
+<li>{{ item }}</li>
+{% endif %} {% endfor %}
+
+<p>Top most favorite item in the list is {{ favorite_pizza.0 }}</p>
