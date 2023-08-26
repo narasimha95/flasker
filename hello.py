@@ -24,28 +24,12 @@ def user(name):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # routing for invalid urls
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("error.html"), 404
+
+# for server failute
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template("error.html"), 500
