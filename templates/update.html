@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+update request
+{% endblock %}
+
+
+{% block body %} 
+
+
+<h3>Update user.... </h3>
+
+
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-primary" role="alert">
+  {{ message }}
+</div>
+
+
+{% endfor %}
+
+
+
+<form  method="POST">
+  {{ form.hidden_tag() }}
+  <table>
+    <tr>
+      <td>{{ form.name.label }}</td><td>{{ form.name(value=updated_name.name) }}</td></tr>
+
+     <tr> <td>{{ form.password.label }}</td><td>{{ form.password}}</td></tr>
+
+      <tr></tr><td>{{ form.email.label }}</td><td>{{ form.email(value=updated_name.email) }}</td></tr>
+
+      <tr><td>{{ form.secret_key.label }}</td><td>{{ form.secret_key }}</td><tr></tr>
+
+    <tr><td>{{ form.submit(class='btn btn-primary') }}</td><td><a href="{{ url_for('delete', id=updated_name.id) }}" class="btn btn-danger">Delete</a></td></tr>
+    
+</table>
+</form>
+
+
+
+<br><br>
+
+{% for user in our_users %}
+  <p>{{ user.id }} {{ user.name }} - {{ user.email }}</p>
+{% endfor %}
+
+
+
+
+{% endblock %}
+
+
+<!-- # General way -->
+<!-- {{ form.username.label }} {{ form.username }}
+  {{ form.password.label }} {{ form.password }}
+ {{ form.submit }} -->

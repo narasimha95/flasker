@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}
+Post Page
+{% endblock %}
+
+
+
+
+{% block body %}
+
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-primary" role="alert">{{message}}</div>
+{% endfor %}
+
+
+
+<h2 align="center">What's on you mind today !!</h2> <br>
+  <form method="POST">
+    <table align="center">
+      <tr><td>{{ form.title.label }}</td><td>{{ form.title }}</td></tr>
+      <tr><td>{{ form.author.label }}</td><td>{{ form.author }} </td></tr>
+      <tr><td>{{ form.content.label }} </td> <td>{{ form.content(rows='5', cols='40') }} </td></tr>
+      <tr><td>{{ form.slug.label }} </td><td>{{ form.slug }} </td></tr>
+      <tr><td>{{ form.submit }}</td></tr>
+    </table>
+  </form>
+{% endblock %}

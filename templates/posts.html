@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}
+Post Page
+{% endblock %}
+
+
+
+
+{% block body %}
+
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-primary" role="alert">{{message}}</div>
+{% endfor %}
+
+
+
+
+<h1>Blog Posts ... </h1>
+{% for post in blog_posts %}
+<a href="{{ url_for('post', id=post.id) }}" class="link-light">
+<div class="container p-3 my-3 bg-dark text-white">
+  {{ post.title }} <br>
+  {{ post.author }} <br>
+  {{ post.date_posted }} <br>
+  {{ post.content }} <br>
+  {{ post.slug }} <br>
+</div>
+</a>
+{% endfor %}
+
+
+
+
+
+
+{% endblock %}

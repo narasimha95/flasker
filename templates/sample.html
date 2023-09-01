@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Account status check
+{% endblock %}
+
+{% block body %}
+  <form method="POST">
+    {{ form.email.label }} {{ form.email }} <br>
+  {{ form.password.label }} {{ form.password }} <br>
+  {{ form.submit }}
+
+  </form>
+{% if user_to_check %}
+
+    <b>Status = </b> 
+    {% if status %}  <p>Your account is in active state</p> 
+    {% else  %} <p>No such accont exist or suspended</p>
+    {% endif %}
+
+{% else %}
+    <p>Check you account Status.......</p>
+
+{% endif %}
+{% endblock %}

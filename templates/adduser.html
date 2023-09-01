@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add User request
+{% endblock %}
+{% block body %} 
+
+
+
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-primary" role="alert">
+  {{ message }}
+</div>
+
+
+{% endfor %}
+
+
+
+<form  method="POST">
+  {{ form.hidden_tag() }}
+  <table>
+  {% for field in form %}
+    <tr>
+      <td>{{ field.label }}</td>
+      <td>{{ field }}</td>
+    </tr>
+  {% endfor %}
+</table>
+</form>
+
+
+
+
+
+
+<br><br>
+
+<h3>Update user details ?</h3>
+<h5>Click on the username to update user</h5>
+
+
+
+{% for user in our_users %}
+  <p> <a href="{{ url_for('update', id=user.id) }}">{{ user.name }}</a> - {{ user.email }} - {{ user.password_hash }} - <a href="{{ url_for('delete', id=user.id) }}">Delete user</a></p>
+{% endfor %}
+
+
+
+
+
+{% endblock %}
+
+
+<!-- # General way -->
+<!-- {{ form.username.label }} {{ form.username }}
+  {{ form.password.label }} {{ form.password }}
+ {{ form.submit }} -->

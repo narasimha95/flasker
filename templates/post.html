@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}
+Post Page
+{% endblock %}
+
+
+
+
+{% block body %}
+
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-primary" role="alert">{{message}}</div>
+{% endfor %}
+
+
+
+
+<h1> Posts {{ post.id }} </h1>
+
+<div class="container p-3 my-3 bg-dark text-white">
+  {{ post.title }} <br>
+  {{ post.author }} <br>
+  {{ post.date_posted }} <br>
+  {{ post.content }} <br>
+  {{ post.slug }} <br>
+  <a href="{{ url_for('posts')}}"><button class="btn alert-primary"> Go Back</button></a>
+  <a href= "{{ url_for('edit_post', id=post.id) }}"><button class="btn alert-secondary">Edit Post</button></a>
+  <a href= "{{ url_for('delete_post', id=post.id) }}"><button class="btn btn-danger">Delete Post</button></a>
+</div>
+
+
+
+
+
+
+
+{% endblock %}

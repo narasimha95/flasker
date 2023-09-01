@@ -1,3 +1,13 @@
+{% extends 'base.html' %} {% block body %}
+
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
+  <script src="{{ url_for('static', filename='js/myfile.js')}}"></script>
+</head>
+
+<img src="{{ url_for('static', filename='img/welcomeback.jpg') }}" alt="Welcomebackl">
+<p id ='demo' class = 'demo'>This is stuff</p>
+
 <h1>this is my first webpage</h1>
 
 <p>My name is {{ first_name | upper }}</p>
@@ -10,3 +20,7 @@
 {% endif %} {% endfor %}
 
 <p>Top most favorite item in the list is {{ favorite_pizza.0 }}</p>
+
+{% endblock %} 
+
+{% block title %} Homepage {% endblock %}
