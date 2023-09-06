@@ -17,7 +17,7 @@ Post Page
 {% endfor %}
 
 
-
+{% if current_user.is_authenticated %}
 <h2 align="center">What's on you mind today !!</h2> <br>
   <form method="POST">
     <table align="center">
@@ -28,4 +28,10 @@ Post Page
       <tr><td>{{ form.submit }}</td></tr>
     </table>
   </form>
+{% else %}
+<h2>User must be logged to acces this page</h2>
+<a href="{{ url_for('login') }}">Login Here !</a>
+{% endif %}
+
+
 {% endblock %}

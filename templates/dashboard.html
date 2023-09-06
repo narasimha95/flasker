@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+{% block body %} 
+
+
+
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-primary" role="alert">
+  {{ message }}
+</div>
+
+
+{% endfor %}
+
+<div class="card">
+  <div class="card-header">
+    Current User details
+  </div>
+  <div class="card-body">
+
+    <strong>Name = </strong> {{ current_user.username }} <br>
+    <strong>Email = </strong> {{ current_user.email }} <br>
+    <strong>Secretkey = </strong>{{ current_user.secret_key }} <br>
+    
+    <tr><td><a href="{{ url_for('update', id=current_user.id) }}" class="btn btn-primary">Update Details</a></td><td><a href="{{ url_for('delete', id=current_user.id) }}" class="btn btn-danger">Delete Account</a></td></tr>
+  </div>
+</div>
+
+<br><br>
+
+<div class="card">
+  <div class="card-header">
+    Update details here !
+  </div>
+  <div class="card-body">
+    <form  method="POST">
+      {{ form.hidden_tag() }}
+      <table>
+        <tr>
+          <td>{{ form.name.label }}</td><td>{{ form.name(value=updated_name.username) }}</td></tr>
+    
+         <tr> <td>{{ form.password_hash.label }}</td><td>{{ form.password_hash}}</td></tr>
+    
+          <tr></tr><td>{{ form.email.label }}</td><td>{{ form.email(value=updated_name.email) }}</td></tr>
+    
+          <tr><td>{{ form.secret_key.label }}</td><td>{{ form.secret_key }}</td><tr></tr>
+    
+        <tr><td>{{ form.submit(class='btn btn-primary') }}</td></tr>
+        
+    </table>
+    </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+<!-- # General way -->
+<!-- {{ form.username.label }} {{ form.username }}
+  {{ form.password.label }} {{ form.password }}
+ {{ form.submit }} -->

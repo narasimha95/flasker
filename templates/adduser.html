@@ -42,7 +42,7 @@ Add User request
 
 
 {% for user in our_users %}
-  <p> <a href="{{ url_for('update', id=user.id) }}">{{ user.name }}</a> - {{ user.email }} - {{ user.password_hash }} - <a href="{{ url_for('delete', id=user.id) }}">Delete user</a></p>
+  <p> <a href="{{ url_for('update', id=user.id) }}">{{ user.username }}</a> - {{ user.email }} - <a href="{{ url_for('delete', id=user.id) }}">Delete user</a></p>
 {% endfor %}
 
 

@@ -26,15 +26,15 @@ update request
   {{ form.hidden_tag() }}
   <table>
     <tr>
-      <td>{{ form.name.label }}</td><td>{{ form.name(value=updated_name.name) }}</td></tr>
+      <td>{{ form.name.label }}</td><td>{{ form.name(value=updated_name.username) }}</td></tr>
 
-     <tr> <td>{{ form.password.label }}</td><td>{{ form.password}}</td></tr>
+     <tr> <td>{{ form.password_hash.label }}</td><td>{{ form.password_hash}}</td></tr>
 
       <tr></tr><td>{{ form.email.label }}</td><td>{{ form.email(value=updated_name.email) }}</td></tr>
 
       <tr><td>{{ form.secret_key.label }}</td><td>{{ form.secret_key }}</td><tr></tr>
 
-    <tr><td>{{ form.submit(class='btn btn-primary') }}</td><td><a href="{{ url_for('delete', id=updated_name.id) }}" class="btn btn-danger">Delete</a></td></tr>
+    <tr><td>{{ form.submit(class='btn btn-primary') }}</td></tr>
     
 </table>
 </form>
@@ -44,7 +44,7 @@ update request
 <br><br>
 
 {% for user in our_users %}
-  <p>{{ user.id }} {{ user.name }} - {{ user.email }}</p>
+  <p>{{ user.id }} {{ user.username }} - {{ user.email }}</p>
 {% endfor %}
 
 

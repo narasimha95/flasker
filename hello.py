@@ -8,6 +8,7 @@ from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 from flask import redirect, url_for
+from flask_login import UserMixin, LoginManager, login_required, logout_user, current_user, login_user
 
 
 # Create a flask instance
@@ -47,38 +48,35 @@ class Posts(db.Model):
 
 
 # creating a model
-class Users(db.Model):
+class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.String(40), unique=True, nullable=False)
-    # password = db.Column(db.String(100), unique=False, nullable=False)
+    username = db.Column(db.String(40), unique=True, nullable=False)
+    password = db.Column(db.String(100), unique=False, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     secret_key = db.Column(db.String(200), nullable=False)
 
-    # password hashing
-    password_hash = db.Column(db.String(128))
-
-    @property
-    def password(self):
-        raise AttributeError('Password is not a readable attribute')
+    # @property
+    # def password(self):
+    #     raise AttributeError('Password is not a readable attribute')
     
-    @password.setter
-    def password(self, password):
-        self.password_hash = generate_password_hash(password)
+    # @password.setter
+    # def password(self, password):
+    #     self.password_hash = generate_password_hash(password)
     
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    # def verify_password(self, password):
+    #     return check_password_hash(self.password_hash, password)
      
-    # create a string
-    def __repr__(self):
-        return f'Name = {self.name}, Email = {self.email}'
+    # # create a string
+    # def __repr__(self):
+    #     return f'Name = {self.name}, Email = {self.email}'
 
 
 
 
 
 # create a form class
-class LoginForm(FlaskForm):
+class RegistrationForm(FlaskForm):
     name = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
     email = EmailField('Email', validators=[DataRequired()])
     password_hash = PasswordField('Password', validators=[DataRequired(), Length(min=2)])
@@ -98,7 +96,10 @@ class PostForm(FlaskForm):
     author = StringField('Author', validators=[DataRequired()])
     slug = StringField("Slug", validators=[DataRequired()])
     submit = SubmitField("Submit")
-
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('submit')
 
 
 
@@ -132,7 +133,73 @@ def users():
 
 
 
+# Flask login stuff
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
+
+
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(username=form.username.data).first()
+        if user :
+            if check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash('User login successfull')
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Wrong password, what you trying to do ? Hack ???')
+        else:
+            flash('Dude you dont even exist in this planet !!')
+
+
+    return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    flash('you have been logout thanks for stopping by')
+    return redirect(url_for('login'))
+
+
+@app.route('/dashboard', methods=['GET', 'POST'])
+@login_required
+def dashboard():
+    form = RegistrationForm()
+    updated_name = Users.query.get_or_404(current_user.id)
+    if request.method == 'POST':
+        updated_name.username = form.name.data
+        updated_name.password = generate_password_hash(form.password_hash.data, 'sha256')
+        updated_name.email = request.form['email']
+        updated_name.secret_key = request.form['secret_key']
+        try:
+            db.session.commit()
+            flash('User upated succes')
+            return render_template("dashboard.html", form=form, updated_name=updated_name)
+        except:
+            flash("Error! looks like there is a problem")
+            return render_template("dashboard.html", form=form, updated_name=updated_name)
+    else:
+        return render_template("dashboard.html", form=form, updated_name=updated_name)
+    return render_template('dashboard.html')
+
+
+
+
 @app.route('/add-post', methods=['GET', 'POST'])
+# @login_required
 def add_post():
     form  = PostForm()
 
@@ -166,7 +233,9 @@ def post(id):
     if post :
         return render_template('post.html', post=post)
     
+
 @app.route('/post/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_post(id):
     post = Posts.query.get_or_404(id)
     form = PostForm()
@@ -178,7 +247,6 @@ def edit_post(id):
         
         # saving to the database
         db.session.commit()
-
         # return render_template('post.html', post=post)
         return redirect(url_for('post', id=post.id))
     form.title.data = post.title
@@ -225,7 +293,7 @@ def accountStatus():
 
         # check the password
         if user_to_check:
-            status = check_password_hash(user_to_check.password_hash, password)
+            status = check_password_hash(user_to_check.password, password)
         
 
 
@@ -236,7 +304,7 @@ def accountStatus():
 
 @app.route('/adduser', methods=['GET', 'POST'])
 def adduser():
-    form = LoginForm()
+    form = RegistrationForm()
     name = ''
     our_users = Users.query.order_by(Users.date_added)
     if  form.validate_on_submit():
@@ -244,7 +312,7 @@ def adduser():
         if user is None :
             # hash the password
             hashed_pwd = generate_password_hash(form.password_hash.data, "sha256")
-            user_obj = Users(name=form.name.data, password_hash=hashed_pwd, email=form.email.data, secret_key=form.secret_key.data)
+            user_obj = Users(username=form.name.data, password=hashed_pwd, email=form.email.data, secret_key=form.secret_key.data)
             db.session.add(user_obj)
             db.session.commit()
             name = form.name.data
@@ -275,11 +343,11 @@ def adduser():
 
 @app.route('/update/<int:id>', methods=['POST', 'GET'])
 def update(id):
-    form = LoginForm()
+    form = RegistrationForm()
     updated_name = Users.query.get_or_404(id)
     if request.method == 'POST':
-        updated_name.name = form.name.data
-        updated_name.password = form.password.data
+        updated_name.username = form.name.data
+        updated_name.password = generate_password_hash(form.password_hash.data, 'sha256')
         updated_name.email = request.form['email']
         updated_name.secret_key = request.form['secret_key']
         try:
@@ -296,7 +364,7 @@ def update(id):
 @app.route('/delete/<int:id>')
 def delete(id) :
     user_to_delete = Users.query.get_or_404(id)
-    form = LoginForm()
+    form = RegistrationForm()
 
     try:
         db.session.delete(user_to_delete)
